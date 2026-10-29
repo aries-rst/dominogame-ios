@@ -1,0 +1,35 @@
+name: DominoGame
+options:
+  bundleIdPrefix: com.aries-rst
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    DEVELOPMENT_TEAM: UWM7LPNBH6
+    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.0"
+targets:
+  DominoGame:
+    type: application
+    platform: iOS
+    sources:
+      - DominoGame
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aries-rst.dominogame.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+    info:
+      path: DominoGame/Info.plist
+      properties:
+        CFBundleDisplayName: Domino Yard
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight

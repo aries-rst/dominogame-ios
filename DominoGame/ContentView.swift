@@ -3,7 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var store = StoreManager()
     @ObservedObject private var lang = AppLang.shared
-    @State private var showGame = false
+    @State private var showSetup = false
+    @State private var showLocalGame = false
+    @State private var options = GameOptions.load()
     @State private var showPremium = false
     @State private var showLobby = false
 
@@ -55,7 +57,7 @@ struct ContentView: View {
 
                     VStack(spacing: 14) {
                         Button {
-                            showGame = true
+                            showSetup = true
                         } label: {
                             menuLabel(t("Play vs Bot", "Играть с ботом"), system: "person.2.fill")
                         }
@@ -88,14 +90,20 @@ struct ContentView: View {
                         .padding(.bottom, 24)
                 }
             }
-            .navigationDestination(isPresented: $showGame) {
-                GameView(store: store)
+            .navigationDestination(isPresented: $showLocalGame) {
+                LocalGameView(store: store, options: options)
             }
             .navigationDestination(isPresented: $showLobby) {
                 MultiplayerLobbyView(store: store)
             }
             .sheet(isPresented: $showPremium) {
                 PremiumView(store: store)
+            }
+            .sheet(isPresented: $showSetup) {
+                GameSetupView(options: $options) {
+                    showSetup = false
+                    showLocalGame = true
+                }
             }
         }
         .preferredColorScheme(.dark)

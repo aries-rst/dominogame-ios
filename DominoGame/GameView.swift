@@ -16,6 +16,7 @@ var deal: DealPayload? = nil
 
 struct GameView: View {
 @ObservedObject var store: StoreManager
+@ObservedObject private var lang = AppLang.shared
 @StateObject private var engine = DominoEngine()
 @Environment(\.dismiss) private var dismiss
 
@@ -49,24 +50,24 @@ setupMultiplayerReceiver()
 botTurnIfNeeded()
 }
 .alert(
-"Игра окончена",
+t("Game Over", "Игра окончена"),
 isPresented: Binding(get: { engine.winner != nil || engine.isDraw }, set: { _ in })
 ) {
-Button("Новая игра") { resetGame() }
-Button("В меню") { dismiss() }
+Button(t("New Game", "Новая игра")) { resetGame() }
+Button(t("Menu", "В меню")) { dismiss() }
 } message: {
 Text(engine.statusMessage.isEmpty
-? (engine.winner == .white ? "Вы победили!" : "Бот победил!")
+? (engine.winner == .white ? t("You won!", "Вы победили!") : t("The bot won!", "Бот победил!"))
 : engine.statusMessage)
 }
 }
 
 private var header: some View {
 HStack {
-Text("Бот: \(engine.hands[.black]?.count ?? 0)")
+Text(t("Bot: \(engine.hands[.black]?.count ?? 0)", "Бот: \(engine.hands[.black]?.count ?? 0)"))
 .foregroundStyle(chalk)
 Spacer()
-Text("Базар: \(engine.boneyard.count)")
+Text(t("Boneyard: \(engine.boneyard.count)", "Базар: \(engine.boneyard.count)"))
 .font(.caption)
 .foregroundStyle(olive)
 Spacer()
@@ -80,9 +81,9 @@ Text(headerTurnText)
 
 private var headerTurnText: String {
 if multiplayer != nil {
-return engine.turn == localRole ? "Ваш ход" : "Ход соперника"
+return engine.turn == localRole ? t("Your turn", "Ваш ход") : t("Opponent's turn", "Ход соперника")
 }
-return engine.turn == .white ? "Ваш ход" : "Ход бота"
+return engine.turn == .white ? t("Your turn", "Ваш ход") : t("Bot's turn", "Ход бота")
 }
 
 private var boardView: some View {
@@ -117,7 +118,7 @@ RoundedRectangle(cornerRadius: 8)
 
 private var handView: some View {
 VStack(spacing: 6) {
-Text("Ваши кости")
+Text(t("Your Tiles", "Ваши кости"))
 .font(.caption)
 .foregroundStyle(chalk.opacity(0.7))
 ScrollView(.horizontal, showsIndicators: false) {
@@ -170,7 +171,7 @@ if multiplayer == nil || localRole == .white {
 Button {
 resetGame()
 } label: {
-Label("Новая игра", systemImage: "arrow.counterclockwise")
+Label(t("New Game", "Новая игра"), systemImage: "arrow.counterclockwise")
 }
 }
 Spacer()
@@ -179,7 +180,7 @@ Text(multiplayerStatusText(mp))
 .font(.caption)
 .foregroundStyle(chalk.opacity(0.6))
 } else if !store.isPremium {
-Text("Реклама в бесплатной версии")
+Text(t("Ads in free version", "Реклама в бесплатной версии"))
 .font(.caption)
 .foregroundStyle(chalk.opacity(0.5))
 }
@@ -191,9 +192,9 @@ Text("Реклама в бесплатной версии")
 
 private func multiplayerStatusText(_ mp: MultiplayerManager) -> String {
 if case .connected(let name) = mp.state {
-return "Подключено: \(name)"
+return t("Connected: \(name)", "Подключено: \(name)")
 }
-return "Соединение прервано"
+return t("Connection lost", "Соединение прервано")
 }
 
 private func handleTapHandTile(_ tile: DominoTile) {
@@ -294,6 +295,7 @@ default: return []
 
 struct PremiumView: View {
 @ObservedObject var store: StoreManager
+@ObservedObject private var lang = AppLang.shared
 @Environment(\.dismiss) private var dismiss
 
 private let brick = Color(red: 0.70, green: 0.27, blue: 0.20)
@@ -310,20 +312,20 @@ Text("Domino Yard Premium")
 .font(.title2.bold())
 
 VStack(alignment: .leading, spacing: 12) {
-featureRow("Без рекламы")
-featureRow("Локальный мультиплеер по Wi-Fi/Bluetooth")
-featureRow("Разовая покупка — навсегда")
+featureRow(t("No ads", "Без рекламы"))
+featureRow(t("Local multiplayer over Wi-Fi/Bluetooth", "Локальный мультиплеер по Wi-Fi/Bluetooth"))
+featureRow(t("One-time purchase — forever", "Разовая покупка — навсегда"))
 }
 .padding(.horizontal, 24)
 
 if store.isPremium {
-Label("Premium уже активен", systemImage: "checkmark.seal.fill")
+Label(t("Premium Already Active", "Premium уже активен"), systemImage: "checkmark.seal.fill")
 .foregroundStyle(.green)
 } else {
 Button {
 Task { await store.purchasePremium() }
 } label: {
-Text("Купить за \(store.priceText)")
+Text(t("Buy for \(store.priceText)", "Купить за \(store.priceText)"))
 .fontWeight(.bold)
 .frame(maxWidth: .infinity)
 .padding()
@@ -333,7 +335,7 @@ Text("Купить за \(store.priceText)")
 }
 .padding(.horizontal, 24)
 
-Button("Восстановить покупки") {
+Button(t("Restore Purchases", "Восстановить покупки")) {
 Task { await store.restorePurchases() }
 }
 .font(.footnote)
@@ -347,7 +349,7 @@ Spacer()
 }
 .toolbar {
 ToolbarItem(placement: .cancellationAction) {
-Button("Закрыть") { dismiss() }
+Button(t("Close", "Закрыть")) { dismiss() }
 }
 }
 }

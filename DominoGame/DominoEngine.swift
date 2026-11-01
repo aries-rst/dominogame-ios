@@ -167,7 +167,7 @@ consecutivePasses = 0
 
 if hands[player]?.isEmpty == true {
 winner = player
-statusMessage = player == .white ? "Вы выставили все кости!" : "Бот выставил все кости!"
+statusMessage = player == .white ? t("You played all your tiles!", "Вы выставили все кости!") : t("The bot played all its tiles!", "Бот выставил все кости!")
 return
 }
 
@@ -199,10 +199,10 @@ let whitePips = hands[.white]?.reduce(0) { $0 + $1.pips } ?? 0
 let blackPips = hands[.black]?.reduce(0) { $0 + $1.pips } ?? 0
 if whitePips == blackPips {
 isDraw = true
-statusMessage = "Игра заблокирована — ничья (\(whitePips) очков у каждого)."
+statusMessage = t("Game blocked — draw (\(whitePips) points each).", "Игра заблокирована — ничья (\(whitePips) очков у каждого).")
 } else {
 winner = whitePips < blackPips ? .white : .black
-statusMessage = "Игра заблокирована. У вас \(whitePips), у бота \(blackPips) очков."
+statusMessage = t("Game blocked. You have \(whitePips), the bot has \(blackPips) points.", "Игра заблокирована. У вас \(whitePips), у бота \(blackPips) очков.")
 }
 }
 

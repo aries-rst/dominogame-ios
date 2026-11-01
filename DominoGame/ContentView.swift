@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var store = StoreManager()
+    @ObservedObject private var lang = AppLang.shared
     @State private var showGame = false
     @State private var showPremium = false
     @State private var showLobby = false
@@ -17,6 +18,28 @@ struct ContentView: View {
                 yard.ignoresSafeArea()
                 VStack(spacing: 28) {
                     Spacer()
+                    HStack {
+                        Spacer()
+                        Button {
+                            AppLang.shared.isRussian.toggle()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "globe")
+                                Text(lang.isRussian ? "EN" : "RU")
+                                    .fontWeight(.semibold)
+                            }
+                            .font(.caption)
+                            .foregroundStyle(chalk)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule().fill(olive.opacity(0.4))
+                                    .overlay(Capsule().stroke(brick.opacity(0.6), lineWidth: 1))
+                            )
+                        }
+                        .padding(.trailing, 20)
+                    }
+
                     VStack(spacing: 6) {
                         Image(systemName: "square.grid.2x2.fill")
                             .font(.system(size: 50))
@@ -25,7 +48,7 @@ struct ContentView: View {
                             .font(.system(size: 28, weight: .heavy, design: .serif))
                             .foregroundStyle(chalk)
                             .tracking(3)
-                        Text("Классическое домино")
+                        Text(t("Classic Dominoes", "Классическое домино"))
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(olive)
                     }
@@ -34,7 +57,7 @@ struct ContentView: View {
                         Button {
                             showGame = true
                         } label: {
-                            menuLabel("Играть с ботом", system: "person.2.fill")
+                            menuLabel(t("Play vs Bot", "Играть с ботом"), system: "person.2.fill")
                         }
 
                         Button {
@@ -44,13 +67,13 @@ struct ContentView: View {
                                 showPremium = true
                             }
                         } label: {
-                            menuLabel("Игра по сети (Wi-Fi/Bluetooth)", system: "wifi")
+                            menuLabel(t("Play Online (Wi-Fi/Bluetooth)", "Игра по сети (Wi-Fi/Bluetooth)"), system: "wifi")
                         }
 
                         Button {
                             showPremium = true
                         } label: {
-                            menuLabel(store.isPremium ? "Premium активен" : "Premium — \(store.priceText)", system: store.isPremium ? "crown.fill" : "crown")
+                            menuLabel(store.isPremium ? t("Premium Active", "Premium активен") : "Premium — \(store.priceText)", system: store.isPremium ? "crown.fill" : "crown")
                         }
                     }
                     .padding(.horizontal, 32)
@@ -59,7 +82,7 @@ struct ContentView: View {
 
                     Spacer()
 
-                    Text(store.isPremium ? "Реклама отключена · Локальный мультиплеер открыт" : "Бесплатная версия · с рекламой")
+                    Text(store.isPremium ? t("Ads disabled · Local multiplayer unlocked", "Реклама отключена · Локальный мультиплеер открыт") : t("Free version · with ads", "Бесплатная версия · с рекламой"))
                         .font(.footnote)
                         .foregroundStyle(chalk.opacity(0.6))
                         .padding(.bottom, 24)

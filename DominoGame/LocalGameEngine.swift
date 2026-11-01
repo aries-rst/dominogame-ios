@@ -14,6 +14,10 @@ final class LocalGameEngine: ObservableObject {
     private var botLevels: [Int]
     private let botLevel: Int
 
+    /// One-shot guard so a finished match is only recorded into GameStats
+    /// once, no matter how many more `bump()`s happen afterwards.
+    private var statsRecorded = false
+
     var selectedTileID: Int? = nil
     var hintMoveID: Int? = nil
     var hintArm: Int? = nil
@@ -23,11 +27,27 @@ final class LocalGameEngine: ObservableObject {
         self.match = m
         self.botLevel = botLevel
         self.botLevels = Array(repeating: botLevel, count: m.n)
+        self.statsRecorded = false
         Domino.newRound(m)
         runBotsIfNeeded()
     }
 
-    private func bump() { version += 1 }
+    private func bump() {
+        version += 1
+        recordStatsIfFinished()
+    }
+
+    private func recordStatsIfFinished() {
+        guard match.over, !statsRecorded else { return }
+        statsRecorded = true
+        let won: Bool
+        if Domino.VARIANTS[match.variant]?.teams == true {
+            won = Domino.slot(match, match.winner) == humanSeat % 2
+        } else {
+            won = match.winner == humanSeat
+        }
+        GameStats.record(variant: match.variant, won: won)
+    }
 
     func isBot(_ p: Int) -> Bool { p != humanSeat }
 
@@ -94,6 +114,7 @@ final class LocalGameEngine: ObservableObject {
         let fresh = Domino.newMatch(variant: match.variant, players: match.n, rnd: rng)
         match = fresh
         botLevels = Array(repeating: botLevel, count: fresh.n)
+        statsRecorded = false
         Domino.newRound(fresh)
         selectedTileID = nil
         hintMoveID = nil

@@ -249,7 +249,7 @@ enum Domino {
     }
 
     static func moves(_ m: DMatch, _ p: Int) -> [DMove] {
-        let st = m.st
+        let st = m.st!
         if st.roundOver { return [] }
         let h = st.hands[p]
         if st.first == nil {
@@ -288,7 +288,7 @@ enum Domino {
 
     static func play(_ m: DMatch, _ p: Int, _ id: Int, _ arm: Int) {
         let V = m.V
-        let st = m.st
+        let st = m.st!
         let i = st.hands[p].firstIndex { $0.id == id }!
         let t = st.hands[p].remove(at: i)
         var scored = 0
@@ -327,18 +327,18 @@ enum Domino {
     }
 
     static func canDraw(_ m: DMatch, _ p: Int) -> Bool {
-        let st = m.st
+        let st = m.st!
         return m.V.draw && !st.roundOver && st.first != nil && moves(m, p).isEmpty && !st.bone.isEmpty
     }
 
     static func draw(_ m: DMatch, _ p: Int) {
-        let st = m.st
+        let st = m.st!
         st.hands[p].append(st.bone.removeLast())
         st.last = DLastEv("draw", p)
     }
 
     static func pass(_ m: DMatch, _ p: Int) {
-        let st = m.st
+        let st = m.st!
         st.passes += 1
         st.last = DLastEv("pass", p)
         if st.passes >= m.n {
@@ -350,7 +350,7 @@ enum Domino {
 
     static func pending(_ m: DMatch) -> DPending? {
         if m.over || !m.started { return nil }
-        let st = m.st
+        let st = m.st!
         if st.roundOver { return nil }
         let p = st.turn
         if !moves(m, p).isEmpty { return DPending(type: "play", p: p) }
@@ -364,7 +364,7 @@ enum Domino {
 
     private static func endRound(_ m: DMatch, _ winnerSeat: Int, _ fish: Bool, _ reachedByFives: Bool) {
         let V = m.V
-        let st = m.st
+        let st = m.st!
         st.roundOver = true
         let hands = st.hands.map { handPips($0) }
         var winner = winnerSeat
@@ -433,7 +433,7 @@ enum Domino {
     // MARK: - Bots: 1 easy, 2 normal, 3 strong
 
     private static func simScore(_ m: DMatch, _ p: Int, _ mv: DMove) -> Int {
-        let st = m.st
+        let st = m.st!
         if !m.V.fives { return 0 }
         let t = st.hands[p].first { $0.id == mv.id }!
         var s: Int
@@ -456,7 +456,7 @@ enum Domino {
     }
 
     static func botMove(_ m: DMatch, _ p: Int, _ level: Int, _ rnd: SeededGenerator) -> DMove? {
-        let st = m.st
+        let st = m.st!
         let ms = moves(m, p)
         if ms.isEmpty { return nil }
         if level == 1 && rnd.nextDouble() < 0.5 {

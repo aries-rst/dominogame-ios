@@ -59,6 +59,9 @@ struct ContentView: View {
                     .padding(20)
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                if !store.isPremium { BannerAdView().frame(maxWidth: .infinity) }
+            }
             .navigationDestination(isPresented: $showLocalGame) {
                 LocalGameView(store: store, options: options)
             }
@@ -82,6 +85,7 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .onAppear { Ads.start() }
     }
 
     // MARK: - Header

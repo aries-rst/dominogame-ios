@@ -313,6 +313,7 @@ Text("Domino Yard Premium")
 
 VStack(alignment: .leading, spacing: 12) {
 featureRow(t("No ads", "Без рекламы"))
+featureRow(t("Hints without ads", "Подсказки без рекламы"))
 featureRow(t("Local multiplayer over Wi-Fi/Bluetooth", "Локальный мультиплеер по Wi-Fi/Bluetooth"))
 featureRow(t("One-time purchase — forever", "Разовая покупка — навсегда"))
 }

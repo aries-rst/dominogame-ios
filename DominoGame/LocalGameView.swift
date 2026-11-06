@@ -272,7 +272,7 @@ struct LocalGameView: View {
                     pillButton(t("Pass", "Пас"), system: "arrow.uturn.forward", tint: brick) { engine.humanPass() }
                 }
                 if w.type == "play" {
-                    pillButton(t("Hint", "Подсказка"), system: "lightbulb.fill", tint: gold) { engine.requestHint() }
+                    pillButton(t("Hint", "Подсказка"), system: store.isPremium ? "lightbulb.fill" : "play.rectangle.fill", tint: gold) { Ads.rewardedHint { engine.requestHint() } }
                 }
             }
             Spacer()
@@ -435,7 +435,7 @@ struct LocalGameView: View {
                 HStack(spacing: 16) {
                     Group {
                         if engine.match.over {
-                            Button(t("Play again", "Ещё партия")) { engine.rematch() }
+                            Button(t("Play again", "Ещё партия")) { Ads.afterGame { engine.rematch() } }
                         } else {
                             Button(t("Next round", "Следующий раунд")) { engine.nextRound() }
                         }
@@ -446,7 +446,9 @@ struct LocalGameView: View {
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
 
-                    Button(t("Menu", "В меню")) { dismiss() }
+                    Button(t("Menu", "В меню")) {
+                        if engine.match.over { Ads.afterGame { dismiss() } } else { dismiss() }
+                    }
                         .padding(.horizontal, 18).padding(.vertical, 10)
                         .foregroundStyle(chalk)
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(chalk.opacity(0.4), lineWidth: 1))

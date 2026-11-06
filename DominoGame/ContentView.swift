@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var showLobby = false
     @State private var showPremium = false
     @State private var showStats = false
+    @State private var showLeague = false
     @State private var showRules = false
     @State private var showSettings = false
 
@@ -66,6 +67,9 @@ struct ContentView: View {
             }
             .navigationDestination(isPresented: $showStats) {
                 StatsView()
+            }
+            .navigationDestination(isPresented: $showLeague) {
+                LeagueView()
             }
             .navigationDestination(isPresented: $showRules) {
                 RulesView()
@@ -258,7 +262,8 @@ struct ContentView: View {
     }
 
     private var utilityRow: some View {
-        HStack(spacing: 12) {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            smallActionButton(t("League", "Домино-лига"), system: "rosette") { showLeague = true }
             smallActionButton(t("Stats", "Статистика"), system: "chart.bar.fill") { showStats = true }
             smallActionButton(t("Rules", "Правила"), system: "book.fill") { showRules = true }
             smallActionButton(t("Settings", "Настройки"), system: "gearshape.fill") { showSettings = true }

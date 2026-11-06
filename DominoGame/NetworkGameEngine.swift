@@ -97,6 +97,10 @@ final class NetworkGameEngine: ObservableObject {
 
     private let multiplayer: MultiplayerManager
     private let rng = SeededGenerator()
+    /// Guards against recording the same finished match into the
+    /// "домино-лига" standings more than once — `version` bumps many times
+    /// while `match.over == true` (every redraw of the round-over sheet).
+    private var leagueRecorded = false
 
     var selectedTileID: Int? = nil
 
@@ -204,7 +208,19 @@ final class NetworkGameEngine: ObservableObject {
         Domino.newRound(fresh)
         match = fresh
         selectedTileID = nil
+        leagueRecorded = false
         bumpAndBroadcast()
+    }
+
+    /// Records this match's result into the local "домино-лига" standings
+    /// (keyed by the group of device names in `seatNames`) the first time
+    /// `match.over` is seen true — called from both the host's own state
+    /// changes and a guest's applied snapshots, so every device keeps its
+    /// own copy for its own group history.
+    private func recordLeagueIfNeeded() {
+        guard match.over, !leagueRecorded else { return }
+        leagueRecorded = true
+        DominoLeague.record(seatNames: seatNames, winnerSeat: match.winner, isTeams: match.V.teams)
     }
 
     // MARK: - Host: validate then apply any seat's action (local or remote)
@@ -251,6 +267,7 @@ final class NetworkGameEngine: ObservableObject {
 
     private func bumpAndBroadcast() {
         version += 1
+        recordLeagueIfNeeded()
         if isHost { broadcast() }
     }
 
@@ -314,6 +331,7 @@ final class NetworkGameEngine: ObservableObject {
         match.eggs = s.eggs
         match.st = st
         version += 1
+        recordLeagueIfNeeded()
     }
 
     private func showToast(_ message: String) {
